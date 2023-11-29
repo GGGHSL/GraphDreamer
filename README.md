@@ -8,7 +8,7 @@
 
 <p align="center">
   <img width="100%" src="assets/teaser.jpg"/>
-
+</p><p align="center">
   <b>GraphDreamer</b> takes scene graphs as input and generates object compositional 3D scenes.
 </p>
 
