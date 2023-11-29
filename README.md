@@ -1,6 +1,6 @@
 # GraphDreamer
 
-### <p align="left"> Official implementation of <font color=#008000>GraphDreamer</font>:Compositional 3D Scene Synthesis from Scene Graphs </p>
+### <p align="left"> Official implementation of</p><p align="left"><font color=#008000>GraphDreamer</font>:Compositional 3D Scene Synthesis from Scene Graphs </p>
 
 #####  <p align="center"> [Gege Gao](https://ggghsl.github.io/GGGWebsite/), [Weiyang Liu](https://wyliu.com/), [Anpei Chen](https://apchenstu.github.io/), [Andreas Geiger](https://www.cvlibs.net/), [Bernhard Schölkopf](https://is.mpg.de/~bs)</p>
 
