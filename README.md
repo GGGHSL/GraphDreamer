@@ -1,6 +1,7 @@
 ### Official implementation of
 
-# <p align="left"> <font color=#008000>GraphDreamer</font>: Compositional 3D Scene Synthesis from Scene Graphs </p>
+# <p align="left"> <font color=#008000>GraphDreamer</font>:</p> 
+# <p align="left">Compositional 3D Scene Synthesis from Scene Graphs </p>
 
 #####  <p align="center"> [Gege Gao](https://ggghsl.github.io/GGGWebsite/), [Weiyang Liu](https://wyliu.com/), [Anpei Chen](https://apchenstu.github.io/), [Andreas Geiger](https://www.cvlibs.net/), [Bernhard Schölkopf](https://is.mpg.de/~bs)</p>
 
@@ -8,7 +9,8 @@
  <!-- | [Video](https://www.youtube.com/watch?v=Xbzl4HzFiNo)</p> -->
 
 <p align="center">
-  <img width="40%" src="assets/teaser.jpg"/>
+  <img width="100%" src="assets/teaser.jpg"/>
+  
   <b>GraphDreamer</b> takes scene graphs as input and generates object compositional 3D scenes.
 </p>
 
