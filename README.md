@@ -17,10 +17,11 @@
 
 ## BibTex
 ```
-@article{ggg2023graphdreamer
+@article{gao2023graphdreamer
   author    = {Gao, Gege and Liu, Weiyang and Chen, Anpei and Geiger, Andreas and Schölkopf, Bernhard},
   title     = {GraphDreamer: Compositional 3D Scene Synthesis from Scene Graphs},
   journal   = {arXiv},
+  volume    = {2312.00093}
   year      = {2023},
 }
 ```
