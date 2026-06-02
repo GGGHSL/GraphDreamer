@@ -13,6 +13,10 @@
   <b>GraphDreamer</b> takes scene graphs as input and generates object compositional 3D scenes.
 </p>
 
+## News
+- **[2026.06] [Follow-up Work](#follow-up-work-20242026-retrospective) retrospective added.** We added a small retrospective section summarizing representative follow-up and adjacent work after GraphDreamer, including optimization-based extensions, richer scene representations, and recent agentic 3D construction pipelines. 
+<!-- See [Follow-up Work](#follow-up-work-20242026-retrospective). -->
+
 ## Abstract
 This repository contains a pytorch implementation for the paper [GraphDreamer: Compositional 3D Scene Synthesis from Scene Graphs](https://arxiv.org/abs/2312.00093). Our work present the first framework capable of generating **compositional 3D scenes** from **scene graphs**, where objects are represented as nodes and their interactions as edges. See the demo bellow to get a general idea.
 
@@ -135,6 +139,54 @@ Check ```./threestudio/models/geometry/gdreamer_implicit_sdf.py``` for more deta
 
 <!-- ## Code Structure
 (TODO) -->
+
+## Follow-up Work (2024–2026 Retrospective)
+
+GraphDreamer appeared at CVPR 2024 as an early step toward structured text-to-3D scene generation. 
+At a high level, its pipeline follows: user prompt → LLM-generated scene graph → natural-language object/relation/scene prompts → 2D diffusion SDS → 3D scene optimization. This makes decomposition explicit, but also leaves a central mismatch: the intermediate scene graph is structured, while the diffusion guidance remains an entangled natural-language signal.
+
+Since then, the field of compositional 3D scene generation has moved quickly, from improving GraphDreamer-style optimization to exploring richer scene representations and agentic construction pipelines. This section summarizes representative follow-up and adjacent work for readers who want a compact roadmap of the area. It is not intended as a full survey; we focus on papers that either cite GraphDreamer as a baseline or address closely related problems in structured 3D scene generation, while omitting surveys, video/4D, avatar/HOI, and otherwise tangential directions.
+
+A useful way to read the follow-up work is as a gradual shift from **static scene graphs**, to **richer scene languages**, and finally to **agentic 3D builders**.
+
+#### 1. Fixing GraphDreamer-style optimization bottlenecks
+The most direct follow-up work targets the practical limitations of GraphDreamer-style SDS optimization. Jointly optimizing all objects from scratch becomes unstable as scene complexity grows: per-object and per-edge SDS gradients can conflict, optimization becomes slow, and memory usage grows quickly beyond a few objects. Other work also replaces the implicit SDF-style scene representation with more object-centric or explicit representations to reduce entanglement and improve texture quality.
+- [**DecompDreamer**](https://arxiv.org/abs/2503.11981) (Nath et al., 2025) — staged decomposed-optimization curriculum on 3D Gaussians; first establishes a structural scaffold via inter-object relations, then refines per-object detail.
+- [**CompGS**](https://arxiv.org/abs/2410.20723) (Ge et al., CVPR 2025) — initializes 3D Gaussians entity-by-entity from 2D compositionality priors, then alternates entity-level and composition-level SDS with masked gradients and volume-adaptive scaling for small entities.
+- [**DIScene**](https://cg.cs.tsinghua.edu.cn/papers/SIGASIA-2024-DIScene.pdf) (Li et al., SIGGRAPH Asia 2024) — per-object explicit mesh + surface-aligned Gaussians in canonical space, with object-aware rendering (pixel-level depth composition) for clean inter-object gradient separation.
+- [**OOR**](https://arxiv.org/abs/2503.19914) (Baik et al., ICCV 2025) — score-based diffusion model directly over pairwise object-object relative pose and scale, with multi-object DAG extension using collision and inconsistency losses.
+
+#### 2. From scene graphs to richer scene representations
+A second line of work addresses the representational limits of using scene graphs plus natural-language prompts as the main control interface. While this representation is convenient and interpretable, it remains a coarse signal for complex 3D scenes: natural language is ambiguous as spatial supervision, per-object descriptions do not reliably preserve visual identity, and decomposed object/relation objectives can lose holistic coherence or physical plausibility. Later methods therefore introduce hybrid scene languages, executable programs, explicit layouts, causal graphs, coherence critics, and architectural priors to recover structure that is lost when a scene graph is flattened into text.
+
+**Scene-graph + NL prompts are a coarse spatial signal:**
+Outputs sometimes disregard specified object counts, exhibit the Janus problem, or blend object boundaries; per-object natural-language descriptions also cannot reliably encode visual identity.
+- [**The Scene Language**](https://arxiv.org/abs/2410.16770) (Zhang et al., CVPR 2025 Highlight) — hybrid representation of programs + words + embeddings, where programs give exact structural layout and embeddings carry visual identity.
+- [**SceneMotifCoder**](https://arxiv.org/abs/2408.02211) (Tam et al., 3DV 2025 Oral) — LLM-synthesized visual programs that compose retrieved 3D assets, sidestepping per-object SDS entirely.
+- [**Layout-Your-3D**](https://arxiv.org/abs/2410.15391) (Zhou et al., ICLR 2025) — explicit 2D layout (user-drawn or LLM-generated) as a spatial blueprint, plus collision-aware optimization and per-instance refinement.
+
+**Decomposition can break holistic coherence and physical plausibility:**
+Per-object/per-edge SDS objectives sometimes yield implausible combinations, severe occlusions, or floating objects.
+- [**CoherenDream**](https://arxiv.org/abs/2504.19860) (Jiang et al., 2025) — unified 3D representation with an MLLM critic providing text-coherence feedback inside the SDS loop, with LLM-generated 3D-bbox warm-up.
+- [**CausalStruct**](https://arxiv.org/abs/2509.15249) (Chen et al., 2025) — LLM-built causal scene graph with causal-order + causal-intervention refinement, plus PID-controlled scale/position tuning from MLLM feedback, on a 3DGS+SDS backbone.
+
+**Small tabletop-scale scenes do not cover architectural structure:**
+GraphDreamer is mostly limited to a few-object composition setting (< 6 in general) and has no explicit representation for walls, doors, ceilings, rooms, or other architectural elements.
+- [**SceneCraft**](https://arxiv.org/abs/2410.09049) (Yang et al., NeurIPS 2024) — accepts user-defined 3D bounding-box layouts for full multi-room indoor scenes, distilled into NeRF via a Stable Diffusion conditioned on per-view semantic + depth renderings of the layout.
+
+#### 3. Agent as iterative 3D builder
+A newer adjacent direction pushes the intermediate representation further: the agent is no longer only a one-shot parser from prompt to scene graph, but an iterative builder. These systems use LLM/VLM agents to plan, write executable programs, render intermediate results, inspect failures, maintain spatial or multimodal memory, and revise the scene over multiple steps. Many of these papers do not cite GraphDreamer directly, but they inherit a related idea: complex 3D generation benefits from an explicit structured layer between user intent and final geometry.
+
+- [**Agentic3D**](https://arxiv.org/abs/2505.20129) (Liu, Tai, Tang, 2025) — equips a VLM agent with a continually updated spatial context, including a scene portrait, labeled point cloud, and scene hypergraph, enabling iterative 3D scene generation, editing, and spatial reasoning.
+- [**VIGA**](https://arxiv.org/abs/2601.11109) (Yin et al., 2026) — an inverse-graphics agent that reconstructs or edits scenes through an interleaved code-render-inspect loop, using executable graphics programs, rendered feedback, and evolving multimodal memory.
+- [**Code-as-Room**](https://arxiv.org/abs/2605.18451) (Yang et al., 2026) — an MLLM-based agentic framework that converts a top-down room image into executable Blender code, decomposing room generation into staged layout parsing (with render-and-compare refinement), object profiling, geometry, material, and lighting synthesis, with a cross-stage memory module to prevent context forgetting.
+
+
+### Where the activity is
+
+The main activity has shifted from simply making GraphDreamer-style SDS **more stable** toward asking what the **intermediate structure** should be. Early follow-up work focuses on optimization and object-level decomposition: how to scale beyond a few objects, avoid gradient conflict, and replace entangled implicit fields with more object-aware representations. The next wave moves beyond scene graphs written as natural language, using programs, layouts, causal graphs, hybrid embeddings, and coherence critics to provide more explicit structure. The newest agentic direction goes one step further: the intermediate structure is no longer only a static representation of the scene, but an executable and revisable construction process.
+
+In this sense, GraphDreamer can be seen as an early step in a broader transition: from prompt-driven 3D generation, to structured scene representation, to agentic 3D construction.
 
 ## Acknowledgement
 The authors extend their thanks to Zehao Yu and Stefano Esposito for their invaluable feedback on the initial draft. Our thanks also go to Yao Feng, Zhen Liu, Zeju Qiu, Yandong Wen, and Yuliang Xiu for their proofreading of the final draft and for their insightful suggestions which enhanced the quality of this paper. Additionally, we appreciate the assistance of those who participated in our user study. 
